@@ -19,30 +19,30 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
-import com.atlassian.crowd.service.cache.CacheImpl;
-
 /**
  * Extension of Crowd CacheImpl object which supports caching of authentication
  * tokens by username/password.
  * 
  * @author Justin Edelson
+ * @author Issa Gorissen
  * 
  */
-public class AuthCacheImpl extends CacheImpl implements AuthBasicCache {
+public class AuthBasicCacheImpl implements AuthBasicCache {
+
+    private static final String USERNAME_PASSWORD_CACHE = "com.atlassian.crowd.integration-auth-username";
 
     private final CacheManager ehCacheManager;
 
-    public AuthCacheImpl(CacheManager ehCacheManager) {
-        super(ehCacheManager);
-        this.ehCacheManager = ehCacheManager;
+    public AuthBasicCacheImpl(long ttl) {
+        this.ehCacheManager = CacheManager.getInstance();
 
         if (!ehCacheManager.cacheExists(USERNAME_PASSWORD_CACHE)) {
-            ehCacheManager.addCache(USERNAME_PASSWORD_CACHE);
+        	Cache newCache = new Cache(USERNAME_PASSWORD_CACHE, 10000, false, false, ttl, ttl);
+        	
+            ehCacheManager.addCache(newCache);
         }
 
     }
-
-    private static final String USERNAME_PASSWORD_CACHE = "com.atlassian.crowd.integration-auth-username";
 
     public void addOrReplaceToken(String username, String password, String token) {
         getUsernamePasswordCache().put(new Element(createCacheKey(username, password), token));
@@ -57,7 +57,7 @@ public class AuthCacheImpl extends CacheImpl implements AuthBasicCache {
     }
 
     private String createCacheKey(String username, String password) {
-        return username + "#" + password;
+        return new StringBuilder(username).append('#').append(password).toString();
     }
 
     private Cache getUsernamePasswordCache() {

@@ -10,20 +10,27 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
-package org.sonatype.nexus.plugins.crowd.client;
+package org.sonatype.nexus.plugins.crowd.client.rest.jaxb;
 
-import org.sonatype.nexus.plugins.crowd.caching.CachingAuthenticationManager;
-import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Interface that allows the various client components of the Crowd plugin to
- * access the Crowd client library.
- *
- * @author Justin Edelson
  * @author Issa Gorissen
  */
-public interface CrowdClientHolder {
-    public boolean isConfigured();
-    public CachingAuthenticationManager getAuthenticationManager();
-    public RestClient getRestClient();
+@XmlRootElement(name="cookie-config")
+public class ConfigCookieGetResponse {
+	public String domain;
+	public boolean secure;
+	public String name;
+	
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ConfigCookieGetResponse [domain=").append(domain)
+				.append(", secure=").append(secure).append(", name=")
+				.append(name).append("]");
+		return builder.toString();
+	}
+	
 }

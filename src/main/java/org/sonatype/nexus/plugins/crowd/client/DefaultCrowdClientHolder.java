@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010 Sonatype, Inc. All rights reserved.
  *
  * This program is licensed to you under the Apache License Version 2.0,
@@ -10,10 +10,9 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
-/**
- *
- */
 package org.sonatype.nexus.plugins.crowd.client;
+
+import java.net.URISyntaxException;
 
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -21,101 +20,43 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.sonatype.nexus.plugins.crowd.caching.AuthBasicCache;
-import org.sonatype.nexus.plugins.crowd.caching.AuthCacheImpl;
+import org.sonatype.nexus.plugins.crowd.caching.AuthBasicCacheImpl;
 import org.sonatype.nexus.plugins.crowd.caching.CachingAuthenticationManager;
+import org.sonatype.nexus.plugins.crowd.client.rest.CachingRestClient;
+import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
 import org.sonatype.nexus.plugins.crowd.config.CrowdPluginConfiguration;
 import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.Configuration;
-import org.sonatype.plexus.components.ehcache.PlexusEhCacheWrapper;
-
-import com.atlassian.crowd.service.AuthenticationManager;
-import com.atlassian.crowd.service.GroupManager;
-import com.atlassian.crowd.service.GroupMembershipManager;
-import com.atlassian.crowd.service.UserManager;
-import com.atlassian.crowd.service.cache.CachingGroupManager;
-import com.atlassian.crowd.service.cache.CachingGroupMembershipManager;
-import com.atlassian.crowd.service.cache.CachingUserManager;
-import com.atlassian.crowd.service.soap.client.SecurityServerClient;
-import com.atlassian.crowd.service.soap.client.SecurityServerClientImpl;
-import com.atlassian.crowd.service.soap.client.SoapClientProperties;
-import com.atlassian.crowd.service.soap.client.SoapClientPropertiesImpl;
 
 /**
  * Implementation of the CrowdClientHolder which uses caching wherever possible.
  *
  * @author Justin Edelson
- *
+ * @author Issa Gorissen
  */
 @Component(role = CrowdClientHolder.class, hint = "default")
 public class DefaultCrowdClientHolder extends AbstractLogEnabled implements CrowdClientHolder, Initializable {
 
     private boolean configured = false;
-
-    private AuthenticationManager authenticationManager;
-
     private AuthBasicCache basicCache;
-
-    @Requirement
-    private PlexusEhCacheWrapper cacheManager;
-
     private Configuration configuration;
+    private CachingAuthenticationManager authManager;
+    private RestClient restClient;
 
     @Requirement
     private CrowdPluginConfiguration crowdPluginConfiguration;
 
-    private GroupManager groupManager;
-
-    private GroupMembershipManager groupMembershipManager;
-
-    private NexusRoleManager nexusRoleManager;
-
-    private SecurityServerClient securityServerClient;
-
-    private UserManager userManager;
-
-    public AuthenticationManager getAuthenticationManager() {
-        return authenticationManager;
-    }
-
-    public Configuration getConfiguration() {
-        return configuration;
-    }
-
-    public GroupManager getGroupManager() {
-        return groupManager;
-    }
-
-    public GroupMembershipManager getGroupMembershipManager() {
-        return groupMembershipManager;
-    }
-
-    public NexusRoleManager getNexusRoleManager() {
-        return nexusRoleManager;
-    }
-
-    public SecurityServerClient getSecurityServerClient() {
-        return securityServerClient;
-    }
-
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
     public void initialize() throws InitializationException {
-        basicCache = new AuthCacheImpl(cacheManager.getEhCacheManager());
         configuration = crowdPluginConfiguration.getConfiguration();
         if (configuration != null) {
-            SoapClientProperties clientProps = SoapClientPropertiesImpl.newInstanceFromProperties(configuration.getCrowdClientProperties());
-            securityServerClient = new SecurityServerClientImpl(clientProps);
-            userManager = new CachingUserManager(securityServerClient, basicCache);
-            groupManager = new CachingGroupManager(securityServerClient, basicCache);
-            groupMembershipManager = new CachingGroupMembershipManager(securityServerClient, userManager, groupManager,
-                    basicCache);
-            authenticationManager = new CachingAuthenticationManager(securityServerClient, basicCache);
-            nexusRoleManager = new DefaultNexusRoleManager(configuration.isUseGroups(), groupManager,
-                    groupMembershipManager, securityServerClient);
+            basicCache = new AuthBasicCacheImpl(60 * configuration.getSessionValidationInterval());
+			try {
+				restClient = new CachingRestClient(configuration);
+			} catch (URISyntaxException use) {
+				throw new InitializationException("Rest client init failed", use);
+			}
+            authManager = new CachingAuthenticationManager(restClient, basicCache);
             configured = true;
         }
-
     }
 
     /**
@@ -125,4 +66,11 @@ public class DefaultCrowdClientHolder extends AbstractLogEnabled implements Crow
         return configured;
     }
 
+    public CachingAuthenticationManager getAuthenticationManager() {
+    	return authManager;
+    }
+    
+    public RestClient getRestClient() {
+    	return restClient;
+    }
 }

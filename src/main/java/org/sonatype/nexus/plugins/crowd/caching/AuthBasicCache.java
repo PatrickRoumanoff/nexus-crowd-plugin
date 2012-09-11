@@ -15,15 +15,13 @@
  */
 package org.sonatype.nexus.plugins.crowd.caching;
 
-import com.atlassian.crowd.service.cache.BasicCache;
-
 /**
  * Extension of Crowd's BasicCache interface to enable authentication caching.
  * 
  * @author Justin Edelson
  * 
  */
-public interface AuthBasicCache extends BasicCache {
+public interface AuthBasicCache {
 
     String getToken(String username, String password);
 

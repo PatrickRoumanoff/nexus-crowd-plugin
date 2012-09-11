@@ -12,8 +12,10 @@
     See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 
 -->
-<model xsd.namespace="http://www.sonatype.org/xsd/nexus-crowd-plugin-1.0.0"
-    xsd.targetNamespace="http://www.sonatype.org/xsd/nexus-crowd-plugin-1.0.0">
+<model xml.namespace="${version}"
+	xml.schemaLocation="${version}"
+	xsd.namespace="${version}"
+    xsd.targetNamespace="${version}">
 
     <id>crowd</id>
 
@@ -35,114 +37,72 @@
     <classes>
         <class rootElement="true" xml.tagName="crowdConfiguration">
             <name>Configuration</name>
-            <version>1.0.0+</version>
             <description>The root element of Nexus Crowd Plugin configuration.</description>
             <fields>
                 <field>
-                    <name>version</name>
-                    <version>1.0.0+</version>
-                    <description>The version of the persisted model.</description>
-                    <type>String</type>
-                    <required>true</required>
-                </field>
-                <field>
                     <name>applicationName</name>
-                    <version>1.0.0+</version>
                     <description>The application name registered with Crowd.</description>
                     <type>String</type>
                     <required>true</required>
                 </field>
                 <field>
                     <name>applicationPassword</name>
-                    <version>1.0.0+</version>
                     <description>The application password registered with Crowd.</description>
                     <type>String</type>
                     <required>true</required>
                 </field>
                 <field>
                     <name>crowdServerUrl</name>
-                    <version>1.0.0+</version>
                     <description>The Crowd Server URL.</description>
                     <type>String</type>
                     <required>true</required>
                 </field>
                 <field>
                     <name>sessionValidationInterval</name>
-                    <version>1.0.0+</version>
                     <description>The Crowd session validation interval.</description>
+                    <type>int</type>
+                    <required>false</required>
+                    <defaultValue>5</defaultValue>
+                </field>
+                <field>
+                    <name>httpProxyHost</name>
+                    <description>The name of the proxy server used to transport SOAP traffic to the Crowd server.</description>
+                    <type>String</type>
+                    <required>false</required>
+                </field>
+                <field>
+                    <name>httpProxyPort</name>
+                    <description>The connection port of the proxy server (must be specified if a proxy host is specified).</description>
                     <type>int</type>
                     <required>false</required>
                 </field>
                 <field>
-                    <name>useGroups</name>
-                    <version>1.0.0+</version>
-                    <description>If true, Crowd groups will be used as the source of Nexus role names.</description>
-                    <type>boolean</type>
+                    <name>httpProxyUsername</name>
+                    <description>The username used to authenticate with the proxy server (if the proxy server requires authentication).</description>
+                    <type>String</type>
                     <required>false</required>
                 </field>
                 <field>
-                    <name>extraCrowdProperties</name>
-                    <version>1.0.0+</version>
-                    <description>A list of additional properties for the Crowd client.
-                    </description>
+                    <name>httpProxyPassword</name>
+                    <description>The password used to authenticate with the proxy server (if the proxy server requires authentication).</description>
+                    <type>String</type>
                     <required>false</required>
-                    <association>
-                        <type>Property</type>
-                        <multiplicity>*</multiplicity>
-                    </association>
-                </field>
-            </fields>
-            <codeSegments>
-                <codeSegment>
-                    <version>1.0.0</version>
-                    <code><![CDATA[
-    public static final String MODEL_VERSION = "1.0.0";
-    public static final int DEFAULT_SESSION_VALIDATION_INTERVAL = 30;
-]]></code>
-                </codeSegment>
-                <codeSegment>
-                    <version>1.0.0</version>
-                    <code><![CDATA[
-    public java.util.Properties getCrowdClientProperties() {
-        java.util.Properties props = new java.util.Properties();
-        props.setProperty(com.atlassian.crowd.integration.Constants.PROPERTIES_FILE_APPLICATION_NAME, applicationName);
-        props.setProperty(com.atlassian.crowd.integration.Constants.PROPERTIES_FILE_APPLICATION_PASSWORD, applicationPassword);
-        props.setProperty(com.atlassian.crowd.integration.Constants.PROPERTIES_FILE_SECURITY_SERVER_URL, crowdServerUrl);
-        props.setProperty(com.atlassian.crowd.integration.Constants.PROPERTIES_FILE_SESSIONKEY_VALIDATIONINTERVAL, Integer.toString(sessionValidationInterval));
-        if (extraCrowdProperties != null) {
-            for (java.util.Iterator<Property> it = extraCrowdProperties.iterator(); it.hasNext();) {
-                Property prop = it.next();
-                props.setProperty(prop.getKey(), prop.getValue());
-            }
-        }
-        return props;
-    }
-]]></code>
-                </codeSegment>
-            </codeSegments>
-        </class>
-
-        <class>
-            <name>Property</name>
-            <version>1.0.0+</version>
-            <description>A name value pair.</description>
-            <fields>
-                <field>
-                    <name>key</name>
-                    <version>1.0.0+</version>
-                    <type>String</type>
-                    <required>true</required>
-                    <description>The property key.</description>
                 </field>
                 <field>
-                    <name>value</name>
-                    <version>1.0.0+</version>
-                    <type>String</type>
-                    <required>true</required>
-                    <description>The property value.</description>
+                    <name>httpMaxConnections</name>
+                    <description>The maximum number of HTTP connections in the connection pool for communication with the Crowd server.</description>
+                    <type>int</type>
+                    <required>false</required>
+                    <defaultValue>20</defaultValue>
+                </field>
+                <field>
+                    <name>httpTimeout</name>
+                    <description>The HTTP connection timeout (milliseconds) used for communication with the Crowd server. A value of zero indicates that there is no connection timeout.</description>
+                    <type>int</type>
+                    <required>false</required>
+                    <defaultValue>5000</defaultValue>
                 </field>
             </fields>
         </class>
-
     </classes>
 </model>

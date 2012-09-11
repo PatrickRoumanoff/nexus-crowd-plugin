@@ -17,40 +17,33 @@ package org.sonatype.nexus.plugins.crowd.caching;
 
 import java.rmi.RemoteException;
 
-import com.atlassian.crowd.exception.ExpiredCredentialException;
-import com.atlassian.crowd.service.cache.SimpleAuthenticationManager;
-import com.atlassian.crowd.service.soap.client.SecurityServerClient;
-import com.atlassian.crowd.util.Assert;
+import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
 
 /**
  * Implementation of Crowd client's AuthenticationManager which caches tokens
  * from a username/password authentication request.
  * 
  * @author Justin Edelson
+ * @author Issa Gorissen
  * 
  */
-public class CachingAuthenticationManager extends SimpleAuthenticationManager {
+public class CachingAuthenticationManager {
 
     private AuthBasicCache basicCache;
+    private RestClient restClient;
 
-    public CachingAuthenticationManager(SecurityServerClient securityServerClient,
-            AuthBasicCache basicCache) {
-        super(securityServerClient);
+    public CachingAuthenticationManager(RestClient restClient, AuthBasicCache basicCache) {
+    	this.restClient = restClient;
         this.basicCache = basicCache;
     }
   
-    @Override
-    public String authenticate(String username, String password) throws RemoteException,
-            com.atlassian.crowd.exception.InvalidAuthorizationTokenException,
-            com.atlassian.crowd.exception.InvalidAuthenticationException,
-            com.atlassian.crowd.exception.InactiveAccountException,
-            com.atlassian.crowd.exception.ApplicationAccessDeniedException, ExpiredCredentialException {
-        Assert.notNull(username);
-        Assert.notNull(password);
+    public String authenticate(String username, String password) throws RemoteException {
+        assert username != null;
+        assert password != null;
 
         String token = basicCache.getToken(username, password);
         if (token == null) {
-                token = super.authenticate(username, password);
+            token = restClient.createSessionToken(username, password);
 
             basicCache.addOrReplaceToken(username, password, token);
         }

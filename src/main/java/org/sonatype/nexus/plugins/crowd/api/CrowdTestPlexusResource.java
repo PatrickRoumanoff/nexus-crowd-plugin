@@ -27,14 +27,12 @@ import org.sonatype.plexus.rest.resource.AbstractPlexusResource;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 import org.sonatype.plexus.rest.resource.PlexusResource;
 
-import com.atlassian.crowd.exception.InvalidAuthenticationException;
-
 /**
  * Intent of this class is to enable an admin to easily test if the Crowd
  * connection is working <b>without</b> enabling the Realm.
  * 
  * @author Justin Edelson
- * 
+ * @author Issa Gorissen
  */
 @Component(role = PlexusResource.class, hint = "CrowdTestPlexusResource")
 public class CrowdTestPlexusResource extends AbstractPlexusResource {
@@ -61,15 +59,9 @@ public class CrowdTestPlexusResource extends AbstractPlexusResource {
     public Object get(Context context, Request request, Response response, Variant variant)
             throws ResourceException {
         try {
-            crowdClientHolder.getSecurityServerClient().authenticate();
+            crowdClientHolder.getRestClient().getCookieConfig();
             return "<status>OK</status>";
         } catch (RemoteException e) {
-            throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
-                    "Unable to authenticate. Check configuration.", e);
-        } catch (InvalidAuthenticationException e) {
-            throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
-                    "Unable to authenticate. Check configuration.", e);
-        } catch (com.atlassian.crowd.exception.InvalidAuthorizationTokenException e) {
             throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
                     "Unable to authenticate. Check configuration.", e);
         }

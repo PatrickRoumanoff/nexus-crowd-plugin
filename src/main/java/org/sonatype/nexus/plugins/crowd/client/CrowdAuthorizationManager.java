@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010 Sonatype, Inc. All rights reserved.
  *
  * This program is licensed to you under the Apache License Version 2.0,
@@ -9,9 +9,6 @@
  * software distributed under the Apache License Version 2.0 is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
- */
-/**
- *
  */
 package org.sonatype.nexus.plugins.crowd.client;
 
@@ -30,16 +27,9 @@ import org.sonatype.security.authorization.NoSuchRoleException;
 import org.sonatype.security.authorization.Privilege;
 import org.sonatype.security.authorization.Role;
 
-import com.atlassian.crowd.exception.InvalidAuthenticationException;
-import com.atlassian.crowd.integration.exception.InvalidAuthorizationTokenException;
-import com.atlassian.crowd.integration.soap.SOAPEntity;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
-
 /**
  * @author justin
- *
+ * @author Issa Gorissen
  */
 @Component(role = AuthorizationManager.class, hint = "Crowd")
 public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationManager {
@@ -57,51 +47,25 @@ public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationMana
      * {@inheritDoc}
      */
     public Privilege getPrivilege(String privilegeId) throws NoSuchPrivilegeException {
-        throw new NoSuchPrivilegeException("Crowd plugin doesn't support privleges");
+        throw new NoSuchPrivilegeException("Crowd plugin doesn't support privileges");
     }
 
     /**
      * {@inheritDoc}
      */
     public Role getRole(String roleId) throws NoSuchRoleException {
-        SOAPEntity entity = null;
-        try {
-            entity = crowdClientHolder.getNexusRoleManager().getNexusRole(roleId);
-        } catch (Exception e) {
-            throw new NoSuchRoleException("Failed to get role " + roleId + " from Crowd.", e);
+        if (crowdClientHolder.isConfigured()) {
+            try {
+                Role role = crowdClientHolder.getRestClient().getGroup(roleId);
+                role.setSource(getSource());
+                return role;
+            } catch (RemoteException e) {
+                throw new NoSuchRoleException("Failed to get role " + roleId + " from Crowd.", e);
+            }
+        } else {
+            throw new NoSuchRoleException("Crowd plugin is not configured.");
         }
-
-        return convertFromEntityToRole.apply(entity);
-
     }
-
-    private Function<SOAPEntity, Role> convertFromEntityToRole = new Function<SOAPEntity, Role>() {
-
-        public Role apply(SOAPEntity entity) {
-            Role role = new Role();
-            role.setRoleId(entity.getName());
-            role.setName(entity.getName());
-            role.setDescription(entity.getDescription());
-            role.setSource(CrowdUserManager.SOURCE);
-            role.setReadOnly(true);
-
-            return role;
-        }
-    };
-
-    private Function<String, Role> convertFromNameToRole = new Function<String, Role>() {
-
-        public Role apply(String name) {
-            Role role = new Role();
-            role.setRoleId(name);
-            role.setName(name);
-            role.setDescription(name);
-            role.setSource(CrowdUserManager.SOURCE);
-            role.setReadOnly(true);
-
-            return role;
-        }
-    };
 
     public String getSource() {
         return CrowdUserManager.SOURCE;
@@ -114,18 +78,12 @@ public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationMana
     public Set<Role> listRoles() {
         if (crowdClientHolder.isConfigured()) {
             try {
-                return Sets.newHashSet(Iterables.transform(crowdClientHolder.getNexusRoleManager().getAllNexusRoles(),
-                        convertFromNameToRole));
+            	Set<Role> roles = crowdClientHolder.getRestClient().getAllGroups();
+            	for (Role role : roles) {
+            		role.setSource(getSource());
+            	}
+                return roles;
             } catch (RemoteException e) {
-                logger.error("Unable to load roles", e);
-                return null;
-            } catch (InvalidAuthenticationException e) {
-                logger.error("Unable to load roles", e);
-                return null;
-            } catch (com.atlassian.crowd.exception.InvalidAuthorizationTokenException e) {
-                logger.error("Unable to load roles", e);
-                return null;
-            } catch (InvalidAuthorizationTokenException e) {
                 logger.error("Unable to load roles", e);
                 return null;
             }

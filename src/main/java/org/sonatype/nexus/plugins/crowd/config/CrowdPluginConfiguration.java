@@ -25,6 +25,4 @@ public interface CrowdPluginConfiguration extends EventMulticaster {
 
     Configuration getConfiguration();
 
-    void save();
-
 }

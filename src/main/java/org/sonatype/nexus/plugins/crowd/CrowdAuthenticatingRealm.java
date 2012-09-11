@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010 Sonatype, Inc. All rights reserved.
  *
  * This program is licensed to you under the Apache License Version 2.0,
@@ -13,8 +13,7 @@
 package org.sonatype.nexus.plugins.crowd;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -37,15 +36,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.plugins.crowd.client.CrowdClientHolder;
 
-import com.atlassian.crowd.exception.InvalidAuthenticationException;
-import com.atlassian.crowd.exception.InvalidAuthorizationTokenException;
-import com.atlassian.crowd.integration.exception.ObjectNotFoundException;
-
 @Component(role = Realm.class, hint = CrowdAuthenticatingRealm.ROLE, description = "OSS Crowd Authentication Realm")
 public class CrowdAuthenticatingRealm extends AuthorizingRealm implements Initializable, Disposable {
 
-	private static final String DEFAULT_MESSAGE = "Could not retrieve info from Crowd.";
 	public static final String ROLE = "NexusCrowdAuthenticationRealm";
+	private static final String DEFAULT_MESSAGE = "Could not retrieve info from Crowd.";
 	private static boolean active;
 
 	@Requirement
@@ -88,16 +83,6 @@ public class CrowdAuthenticatingRealm extends AuthorizingRealm implements Initia
 			return new SimpleAuthenticationInfo(token.getPrincipal(), token.getCredentials(), getName());
 		} catch (RemoteException e) {
 			throw new AuthenticationException(DEFAULT_MESSAGE, e);
-		} catch (com.atlassian.crowd.exception.InactiveAccountException e) {
-			throw new AuthenticationException(DEFAULT_MESSAGE, e);
-		} catch (com.atlassian.crowd.exception.ExpiredCredentialException e) {
-			throw new AuthenticationException(DEFAULT_MESSAGE, e);
-		} catch (com.atlassian.crowd.exception.InvalidAuthenticationException e) {
-			throw new AuthenticationException(DEFAULT_MESSAGE, e);
-		} catch (com.atlassian.crowd.exception.InvalidAuthorizationTokenException e) {
-			throw new AuthenticationException(DEFAULT_MESSAGE, e);
-		} catch (com.atlassian.crowd.exception.ApplicationAccessDeniedException e) {
-			throw new AuthenticationException(DEFAULT_MESSAGE, e);
 		}
 	}
 
@@ -105,19 +90,9 @@ public class CrowdAuthenticatingRealm extends AuthorizingRealm implements Initia
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 		String username = (String) principals.getPrimaryPrincipal();
 		try {
-			List<String> roles = crowdClientHolder.getNexusRoleManager().getNexusRoles(username);
-			return new SimpleAuthorizationInfo(new HashSet<String>(roles));
-		} catch (com.atlassian.crowd.exception.UserNotFoundException e) {
-			throw new AuthorizationException(DEFAULT_MESSAGE, e);
+			Set<String> groups = crowdClientHolder.getRestClient().getNestedGroups(username);
+			return new SimpleAuthorizationInfo(groups);
 		} catch (RemoteException e) {
-			throw new AuthorizationException(DEFAULT_MESSAGE, e);
-		} catch (com.atlassian.crowd.integration.exception.InvalidAuthorizationTokenException e) {
-			throw new AuthorizationException(DEFAULT_MESSAGE, e);
-		} catch (ObjectNotFoundException e) {
-			throw new AuthorizationException(DEFAULT_MESSAGE, e);
-		} catch (InvalidAuthenticationException e) {
-			throw new AuthorizationException(DEFAULT_MESSAGE, e);
-		} catch (InvalidAuthorizationTokenException e) {
 			throw new AuthorizationException(DEFAULT_MESSAGE, e);
 		}
 	}
