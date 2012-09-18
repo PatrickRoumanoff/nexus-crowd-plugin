@@ -1,6 +1,4 @@
 /*
- * Copyright (c) 2010 Sonatype, Inc. All rights reserved.
- *
  * This program is licensed to you under the Apache License Version 2.0,
  * and you may not use this file except in compliance with the Apache License Version 2.0.
  * You may obtain a copy of the Apache License Version 2.0 at http://www.apache.org/licenses/LICENSE-2.0.
@@ -160,8 +158,6 @@ public class RestClient {
 	 * @return a <code>ConfigCookieGetResponse</code>
 	 * @throws RemoteException
 	 */
-	// XXX: calling method does not seem to work under nexus 2.1.2
-	// not really needing it, so not investigating to fix it
 	public ConfigCookieGetResponse getCookieConfig() throws RemoteException {
 		LOG.info("ConfigCookieGetResponse getCookieConfig()");
 		WebResource r = client.resource(crowdServer.resolve("config/cookie"));
