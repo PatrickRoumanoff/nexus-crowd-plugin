@@ -52,17 +52,28 @@ Configuration
 </crowdConfiguration>
 +------------------
 
-  [[2]] By default, Crowd roles will be used. If you want to use Crowd groups instead add this configuration:
-  
-+------------------
-       <useGroups>true</useGroups>
-+------------------
+The full version of this file looks like
 
-  [[3]] Start up Nexus. You can test that the configuration is valid by hitting the URL http://SERVER:PORT/nexus/service/local/crowd/test.
+<?xml version="1.0" encoding="UTF-8"?>
+<crowdConfiguration>
+  <crowdServerUrl>http://mycrowd/services/</crowdServerUrl>
+  <applicationName>nexus</applicationName>
+  <applicationPassword>SECRET</applicationPassword>
+  <sessionValidationInterval>5</sessionValidationInterval>
+  <httpProxyHost></httpProxyHost>
+  <httpProxyPort>0</httpProxyPort>
+  <httpProxyUsername></httpProxyUsername>
+  <httpProxyPassword></httpProxyPassword>
+  <httpMaxConnections>20</httpMaxConnections>
+  <httpTimeout>5000</httpTimeout>
+</crowdConfiguration>
+
+
+  [[2]] Start up Nexus. You can test that the configuration is valid by hitting the URL http://SERVER:PORT/nexus/service/local/crowd/test.
   If you get back an OK status, the configuration is valid and you can proceed. If not, check your
   configuration.
 
-  [[4]] Log in as an administrator to Nexus and then select the Crowd plugin's security realm
+  [[3]] Log in as an administrator to Nexus and then select the Crowd plugin's security realm
   on the Server Administration page:
   
 [images/screenshot.png]

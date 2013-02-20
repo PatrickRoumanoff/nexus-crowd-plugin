@@ -18,17 +18,26 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.inject.Inject;
+
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.guice.bean.locators.BeanLocator;
 import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.Configuration;
 import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.io.xpp3.NexusCrowdPluginConfigurationXpp3Reader;
-import org.sonatype.plexus.appevents.SimpleEventMulticaster;
+import org.sonatype.sisu.goodies.eventbus.internal.DefaultEventBus;
+import org.sonatype.sisu.goodies.eventbus.internal.guava.EventBus;
 
 @Component(role = CrowdPluginConfiguration.class, hint = "default")
-public class DefaultCrowdPluginConfiguration extends SimpleEventMulticaster implements
+public class DefaultCrowdPluginConfiguration extends DefaultEventBus implements
         CrowdPluginConfiguration {
+
+	@Inject
+	public DefaultCrowdPluginConfiguration(EventBus eventBus, BeanLocator beanLocator) {
+		super(eventBus, beanLocator);
+	}
 
 	private final Logger logger = LoggerFactory.getLogger(DefaultCrowdPluginConfiguration.class);
 	

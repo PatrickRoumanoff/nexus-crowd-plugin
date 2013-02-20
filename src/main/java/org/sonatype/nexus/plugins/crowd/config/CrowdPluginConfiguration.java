@@ -13,7 +13,7 @@
 package org.sonatype.nexus.plugins.crowd.config;
 
 import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.Configuration;
-import org.sonatype.plexus.appevents.EventMulticaster;
+import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 /**
  * Interface that manages Crowd Plugin Configuration data.
@@ -21,7 +21,7 @@ import org.sonatype.plexus.appevents.EventMulticaster;
  * @author jedelson
  *
  */
-public interface CrowdPluginConfiguration extends EventMulticaster {
+public interface CrowdPluginConfiguration extends EventBus {
 
     Configuration getConfiguration();
 
