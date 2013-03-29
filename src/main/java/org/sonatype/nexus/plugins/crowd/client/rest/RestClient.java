@@ -18,6 +18,8 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
 
@@ -25,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.plugins.crowd.client.rest.jaxb.ConfigCookieGetResponse;
-import org.sonatype.nexus.plugins.crowd.client.rest.jaxb.Error;
 import org.sonatype.nexus.plugins.crowd.client.rest.jaxb.GroupResponse;
 import org.sonatype.nexus.plugins.crowd.client.rest.jaxb.SearchUserGetResponse;
 import org.sonatype.nexus.plugins.crowd.client.rest.jaxb.SessionPost;
@@ -54,6 +55,8 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 public class RestClient {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RestClient.class);
+	
+	private static final Pattern ERROR_XML = Pattern.compile(".*<reason>(.*)</reason>.*<message>(.*)</message>.*", Pattern.CASE_INSENSITIVE);
 	
 	private Client client;
 	private URI crowdServer;
@@ -102,7 +105,7 @@ public class RestClient {
 	 * @throws RemoteException
 	 */
 	public String createSessionToken(String username, String password) throws RemoteException {
-		LOG.info("session created for '" + String.valueOf(username) + "'");
+		if (LOG.isDebugEnabled()) LOG.debug("session creation attempt for '" + String.valueOf(username) + "'");
 		
 		WebResource r = client.resource(crowdServer.resolve("session"));
 		
@@ -114,6 +117,8 @@ public class RestClient {
 			
 			if (LOG.isDebugEnabled()) LOG.debug(response.toString());
 			
+			LOG.info("session created for '" + String.valueOf(username) + "'");
+
 			return response.token;
 		} catch (UniformInterfaceException uie) {
 			throw handleError(uie);
@@ -159,7 +164,7 @@ public class RestClient {
 	 * @throws RemoteException
 	 */
 	public ConfigCookieGetResponse getCookieConfig() throws RemoteException {
-		LOG.info("ConfigCookieGetResponse getCookieConfig()");
+		LOG.debug("ConfigCookieGetResponse getCookieConfig()");
 		WebResource r = client.resource(crowdServer.resolve("config/cookie"));
 		
 		try {
@@ -177,7 +182,7 @@ public class RestClient {
 	 */
 	// XXX: does not seem to be used by Nexus 2.1.2
 	public Set<String> getAllUsernames() throws RemoteException {
-		if (LOG.isDebugEnabled()) LOG.debug("getAllUsernames()");
+		LOG.debug("getAllUsernames()");
 		
 		WebResource r = client.resource(crowdServer.resolve("search?entity-type=user&restriction=active%3Dtrue"));
 		
@@ -214,7 +219,9 @@ public class RestClient {
 		UserResponse response = null;
 		try {
 			response = r.get(UserResponse.class);
+			
 			if (LOG.isDebugEnabled()) LOG.debug(response.toString());
+			
 		} catch (UniformInterfaceException uie) {
 			throw handleError(uie);
 		}
@@ -358,7 +365,7 @@ public class RestClient {
 	 * @throws RemoteException
 	 */
 	public Set<Role> getAllGroups() throws RemoteException {
-		if (LOG.isDebugEnabled()) LOG.debug("getAllGroups()");
+		LOG.debug("getAllGroups()");
 		
 		WebResource r = client.resource(crowdServer.resolve("search?entity-type=group"));
 		
@@ -401,7 +408,14 @@ public class RestClient {
 	
 	private RemoteException handleError(UniformInterfaceException uie) {
 		ClientResponse response = uie.getResponse();
-		Error error = response.getEntity(Error.class);
-		return new RemoteException(error.message);
+		String errorXml = response.getEntity(String.class);
+		if (errorXml != null) {
+			Matcher matcher = ERROR_XML.matcher(errorXml);
+			if (matcher.matches()) {
+				return new RemoteException(matcher.group(1) + ": " + matcher.group(2));
+			}
+		}
+		
+		return new RemoteException("Error in a Crowd REST call", uie);
 	}
 }
