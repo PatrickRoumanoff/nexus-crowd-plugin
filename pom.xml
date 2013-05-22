@@ -37,6 +37,13 @@
 		<nexus.version>2.3.1</nexus.version>
 		<app-lifecycle.version>1.7</app-lifecycle.version>
 	</properties>
+	
+	<repositories>
+		<repository>
+			<id>nuxeo</id>
+			<url>https://maven-us.nuxeo.org/nexus/content/repositories/public</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<!-- Main plugin API, pulling in what is needed -->
