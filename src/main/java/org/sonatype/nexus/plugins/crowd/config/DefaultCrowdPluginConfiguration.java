@@ -35,8 +35,8 @@ public class DefaultCrowdPluginConfiguration extends DefaultEventBus implements
         CrowdPluginConfiguration {
 
 	@Inject
-	public DefaultCrowdPluginConfiguration(EventBus eventBus, BeanLocator beanLocator) {
-		super(eventBus, beanLocator);
+	public DefaultCrowdPluginConfiguration(EventBus eventBus) {
+		super(eventBus);
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(DefaultCrowdPluginConfiguration.class);
