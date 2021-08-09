@@ -19,9 +19,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
@@ -68,7 +68,10 @@ public class CrowdAuthenticatingRealm extends AuthorizingRealm {
             restClient.authenticate(token.getUsername(), password);
             return new SimpleAuthenticationInfo(token.getPrincipal(), token.getCredentials(), getName());
         } catch (RestException re) {
-            throw new AccountException("Invalid login credentials for user '" + token.getUsername() + "'");
+            // the best exception to use due to the fact that the REST call to Crowd is not giving details
+            // about the auth failure reason, would be to use the AuthenticationException class
+            // but the audit from Nexus is filtering out this type and checks only for IncorrectCredentialsException!
+            throw new IncorrectCredentialsException("Invalid login credentials for user '" + token.getUsername() + "'");
         }
     }
 
