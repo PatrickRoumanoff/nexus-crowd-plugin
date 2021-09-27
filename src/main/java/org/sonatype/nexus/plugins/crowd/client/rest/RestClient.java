@@ -41,12 +41,12 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -163,11 +163,11 @@ public class RestClient {
             acceptXmlResponse(post);
             StringWriter writer = new StringWriter();
             JAXB.marshal(creds, writer);
-            post.setEntity(EntityBuilder.create()
-                    .setText(writer.toString())
-                    .setContentType(ContentType.APPLICATION_XML)
-                    .setContentEncoding(UTF8)
-                    .build());
+            
+            StringEntity strEntity = new StringEntity(writer.toString(),
+                    ContentType.APPLICATION_XML.withCharset(UTF8));
+            
+            post.setEntity(strEntity);
 
             enablePreemptiveAuth(post, hc);
             HttpResponse response = client.execute(post);
