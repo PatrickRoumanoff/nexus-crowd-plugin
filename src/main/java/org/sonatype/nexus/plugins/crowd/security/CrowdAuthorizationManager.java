@@ -35,11 +35,11 @@ import org.sonatype.nexus.security.role.Role;
  * @author Issa Gorissen
  */
 @Singleton
-@Named("Crowd")
+@Named("OSSCrowd")
 public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationManager {
     private static final Logger LOG = LoggerFactory.getLogger(CrowdAuthorizationManager.class);
 
-    private static final String SOURCE = "Crowd";
+    private static final String SOURCE = "OSSCrowd";
 
     private RestClient restClient;
 

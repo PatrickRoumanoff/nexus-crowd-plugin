@@ -36,10 +36,10 @@ import com.google.common.collect.Sets;
  * @author justin
  * @author Issa Gorissen
  */
-@Named("Crowd")
+@Named("OSSCrowd")
 @Singleton
 public class CrowdUserManager extends AbstractReadOnlyUserManager {
-    private static final String SOURCE = "Crowd";
+    private static final String SOURCE = "OSSCrowd";
 
     private RestClient restClient;
 
