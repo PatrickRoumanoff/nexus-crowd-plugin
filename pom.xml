@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.sonatype.nexus.plugins</groupId>
         <artifactId>nexus-plugins</artifactId>
-        <version>3.34.1-01</version>
+        <version>3.38.1-01</version>
     </parent>
 
     <groupId>com.roumanoff.nexus</groupId>
     <artifactId>nexus-crowd-plugin</artifactId>
-    <version>3.34.1</version>
+    <version>3.38.1</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>bundle</packaging>
 
@@ -68,13 +68,13 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>
         	<groupId>commons-codec</groupId>
         	<artifactId>commons-codec</artifactId>
-        	<scope>compile</scope>
+        	<scope>provided</scope>
         </dependency>
 
     </dependencies>
@@ -84,20 +84,10 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <extensions>true</extensions>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>!*</Export-Package>
-                        <Embed-Dependency>*;scope=compile</Embed-Dependency>
-                        <Embed-Directory>dependencies</Embed-Directory>
-                        <Embed-Transitive>true</Embed-Transitive>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>
