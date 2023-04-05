@@ -13,6 +13,7 @@
 package org.sonatype.nexus.plugins.crowd.security;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -82,6 +83,16 @@ public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationMana
     @Override
     public Privilege getPrivilege(String privilegeId) throws NoSuchPrivilegeException {
         throw new NoSuchPrivilegeException(privilegeId);
+    }
+
+    @Override
+    public Privilege getPrivilegeByName(String privilegeName) throws NoSuchPrivilegeException {
+        throw new NoSuchPrivilegeException(privilegeName);
+    }
+
+    @Override
+    public List<Privilege> getPrivileges(Set<String> privilegeIds) {
+        return Collections.emptyList();
     }
 
 }
