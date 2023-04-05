@@ -1,7 +1,7 @@
 Nexus Crowd Plugin [![Build Status](https://travis-ci.org/PatrickRoumanoff/nexus-crowd-plugin.png)](https://travis-ci.org/PatrickRoumanoff/nexus-crowd-plugin)
 ==================
 
-This plugin works with Nexus 3.x and Crowd 2.x
+This plugin works with Nexus 3.x and Crowd 2.x and newer.
 
 This is a fork of the original work done by Sonatype, but
 they stopped supporting the oss version and moved it to Nexus Pro, 

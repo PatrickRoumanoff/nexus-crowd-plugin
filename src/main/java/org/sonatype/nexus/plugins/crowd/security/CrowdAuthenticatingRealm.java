@@ -15,6 +15,7 @@ package org.sonatype.nexus.plugins.crowd.security;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -29,6 +30,7 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.eclipse.sisu.Description;
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ import org.sonatype.nexus.plugins.crowd.client.rest.RestException;
 
 @Singleton
 @Named(CrowdAuthenticatingRealm.NAME)
+@Typed({Realm.class})
 @Description("OSS Crowd Authentication Realm")
 public class CrowdAuthenticatingRealm extends AuthorizingRealm {
     private static final Logger LOG = LoggerFactory.getLogger(CrowdAuthenticatingRealm.class);
@@ -77,8 +80,8 @@ public class CrowdAuthenticatingRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        if (principals == null) {
-            throw new AuthorizationException("Cannot authorize with no principals.");
+        if (principals == null || !principals.getRealmNames().contains(getName())) {
+            return null;
         }
 
         String username = principals.getPrimaryPrincipal().toString();
