@@ -105,6 +105,10 @@ public class CrowdUserManager extends AbstractReadOnlyUserManager {
         }
     }
 
+    @Override
+    public User getUser(String userId, Set<String> roleIds) throws UserNotFoundException {
+        return getUser(userId);
+    }
 
 
     private User completeUserRolesAndSource(User user) {
