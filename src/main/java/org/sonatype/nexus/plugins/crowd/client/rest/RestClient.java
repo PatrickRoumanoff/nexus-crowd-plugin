@@ -135,7 +135,6 @@ public class RestClient {
     @Override
     protected void finalize() throws Throwable {
         cm.close();
-        super.finalize();
     }
 
 

@@ -11,8 +11,9 @@
 package org.sonatype.nexus.plugins.crowd.client.rest;
 
 import java.net.URISyntaxException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,9 +24,8 @@ import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.expiry.Duration;
-import org.ehcache.expiry.Expirations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.plugins.crowd.config.CrowdPluginConfiguration;
@@ -67,7 +67,7 @@ public class CachingRestClient extends RestClient {
 		authCache = ehCacheManager.createCache(AUTH_CACHE_NAME,
 				CacheConfigurationBuilder
 						.newCacheConfigurationBuilder(String.class, String.class, ResourcePoolsBuilder.heap(DEFAULT_CACHE_HEAP_SIZE))
-						.withExpiry(Expirations.timeToIdleExpiration(Duration.of(5, TimeUnit.MINUTES))).build());
+						.withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.of(5, ChronoUnit.MINUTES))).build());
 	}
 
 	@Override
@@ -148,6 +148,6 @@ public class CachingRestClient extends RestClient {
 			CrowdPluginConfiguration config) {
 		return CacheConfigurationBuilder
 				.newCacheConfigurationBuilder(keyClass, valueClass, ResourcePoolsBuilder.heap(DEFAULT_CACHE_HEAP_SIZE))
-				.withExpiry(Expirations.timeToLiveExpiration(Duration.of(config.getCacheTTL(), TimeUnit.SECONDS)));
+				.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.of(config.getCacheTTL(), ChronoUnit.SECONDS)));
 	}
 }

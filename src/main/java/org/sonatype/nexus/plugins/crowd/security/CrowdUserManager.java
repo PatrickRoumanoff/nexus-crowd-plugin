@@ -60,6 +60,14 @@ public class CrowdUserManager extends AbstractReadOnlyUserManager {
         return CrowdAuthenticatingRealm.NAME;
     }
 
+    /**
+     * @return {@code true} if this realm has a configuration associated with it, {@code false} otherwise
+     */
+    @Override
+    public boolean isConfigured() {
+    	return true;
+    }
+    
     @Override
     public User getUser(String userId) throws UserNotFoundException {
         try {
