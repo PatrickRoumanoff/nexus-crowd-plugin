@@ -16,10 +16,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
 import org.sonatype.nexus.plugins.crowd.client.rest.RestException;
 import org.sonatype.nexus.security.role.RoleIdentifier;
@@ -27,19 +23,25 @@ import org.sonatype.nexus.security.user.AbstractReadOnlyUserManager;
 import org.sonatype.nexus.security.user.User;
 import org.sonatype.nexus.security.user.UserNotFoundException;
 import org.sonatype.nexus.security.user.UserSearchCriteria;
-
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Description;
+import org.springframework.stereotype.Component;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * @author justin
  * @author Issa Gorissen
  */
-@Named("OSSCrowd")
+@Qualifier(CrowdUserManager.SOURCE)
 @Singleton
+@Component
+@Description("Crowd")
 public class CrowdUserManager extends AbstractReadOnlyUserManager {
-    private static final String SOURCE = "OSSCrowd";
+    public static final String SOURCE = "OSSCrowd";
 
     private RestClient restClient;
 

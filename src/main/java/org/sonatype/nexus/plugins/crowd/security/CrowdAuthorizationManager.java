@@ -17,10 +17,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
@@ -30,17 +26,20 @@ import org.sonatype.nexus.security.privilege.NoSuchPrivilegeException;
 import org.sonatype.nexus.security.privilege.Privilege;
 import org.sonatype.nexus.security.role.NoSuchRoleException;
 import org.sonatype.nexus.security.role.Role;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * @author justin
  * @author Issa Gorissen
  */
 @Singleton
-@Named("OSSCrowd")
+@Component
+@Qualifier("OSSCrowdAuthorizationManager")
 public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationManager {
     private static final Logger LOG = LoggerFactory.getLogger(CrowdAuthorizationManager.class);
-
-    private static final String SOURCE = "OSSCrowd";
 
     private RestClient restClient;
 
@@ -53,7 +52,12 @@ public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationMana
 
     @Override
     public String getSource() {
-        return SOURCE;
+        return CrowdUserManager.SOURCE;
+    }
+    
+    @Override
+    public String getRealmName() {
+      return CrowdAuthenticatingRealm.NAME;
     }
 
     @Override

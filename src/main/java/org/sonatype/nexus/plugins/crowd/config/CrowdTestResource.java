@@ -12,9 +12,6 @@
  */
 package org.sonatype.nexus.plugins.crowd.config;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -23,6 +20,9 @@ import javax.ws.rs.core.MediaType;
 import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
 import org.sonatype.nexus.plugins.crowd.client.rest.RestException;
 import org.sonatype.nexus.rest.Resource;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 
 /**

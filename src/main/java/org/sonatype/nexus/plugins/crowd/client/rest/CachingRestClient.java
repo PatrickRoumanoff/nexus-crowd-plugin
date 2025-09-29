@@ -15,10 +15,6 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
@@ -31,6 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.plugins.crowd.config.CrowdPluginConfiguration;
 import org.sonatype.nexus.security.role.Role;
 import org.sonatype.nexus.security.user.User;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 /**
  * @author Issa Gorissen

@@ -15,11 +15,6 @@ package org.sonatype.nexus.plugins.crowd.security;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -30,17 +25,20 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.eclipse.sisu.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
 import org.sonatype.nexus.plugins.crowd.client.rest.RestException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
-@Named(CrowdAuthenticatingRealm.NAME)
-@Typed({Realm.class})
+@Component
+@Qualifier(CrowdAuthenticatingRealm.NAME)
 @Description("OSS Crowd Authentication Realm")
 public class CrowdAuthenticatingRealm extends AuthorizingRealm {
     private static final Logger LOG = LoggerFactory.getLogger(CrowdAuthenticatingRealm.class);

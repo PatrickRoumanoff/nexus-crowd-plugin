@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.sonatype.nexus.plugins</groupId>
         <artifactId>nexus-plugins</artifactId>
-        <version>3.81.1-01</version>
+        <version>3.84.1-01</version>
     </parent>
 
     <groupId>com.roumanoff.nexus</groupId>
