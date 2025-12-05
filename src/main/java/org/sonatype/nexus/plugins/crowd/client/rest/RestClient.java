@@ -65,11 +65,12 @@ import org.sonatype.nexus.plugins.crowd.config.CrowdPluginConfiguration;
 import org.sonatype.nexus.security.role.Role;
 import org.sonatype.nexus.security.user.User;
 import org.sonatype.nexus.security.user.UserStatus;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  * @author Issa Gorissen
  */
-public class RestClient {
+public class RestClient implements DisposableBean {
     private static final Logger LOG = LoggerFactory.getLogger(RestClient.class);
     private static final String UTF8 = "UTF-8";
 
@@ -133,7 +134,7 @@ public class RestClient {
     
 
     @Override
-    protected void finalize() throws Throwable {
+    public void destroy() throws Exception {
         cm.close();
     }
 

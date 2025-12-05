@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.sonatype.nexus.plugins</groupId>
         <artifactId>nexus-plugins</artifactId>
-        <version>3.84.1-01</version>
+        <version>3.87.0-03</version>
     </parent>
 
     <groupId>com.roumanoff.nexus</groupId>
@@ -16,8 +16,8 @@
     <properties>
         <pluginName>Nexus Crowd Integration</pluginName>
         <pluginDescription>Integration between Nexus MRM and Crowd Identity Server.</pluginDescription>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
     <scm>

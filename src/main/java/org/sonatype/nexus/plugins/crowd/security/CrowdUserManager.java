@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
+import org.sonatype.nexus.common.event.EventManager;
 import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
 import org.sonatype.nexus.plugins.crowd.client.rest.RestException;
 import org.sonatype.nexus.security.role.RoleIdentifier;
@@ -46,7 +47,8 @@ public class CrowdUserManager extends AbstractReadOnlyUserManager {
     private RestClient restClient;
 
     @Inject
-    public CrowdUserManager(RestClient rc) {
+    public CrowdUserManager(RestClient rc, final EventManager eventManager) {
+        super(eventManager);
         restClient = Objects.requireNonNull(rc);
 
         log.info("CrowdUserManager is starting...");

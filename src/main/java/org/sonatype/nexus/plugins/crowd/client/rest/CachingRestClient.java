@@ -30,13 +30,14 @@ import org.sonatype.nexus.security.user.User;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  * @author Issa Gorissen
  */
 @Named
 @Singleton
-public class CachingRestClient extends RestClient {
+public class CachingRestClient extends RestClient implements DisposableBean {
 	private static final Logger LOG = LoggerFactory.getLogger(CachingRestClient.class);
 
 	private static final String GROUPS_CACHE_NAME = CachingRestClient.class.getName() + "#cache.groups";
@@ -70,9 +71,9 @@ public class CachingRestClient extends RestClient {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
+	public void destroy() throws Exception {
 		ehCacheManager.close();
-		super.finalize();
+		super.destroy();
 	}
 
 	@Override
